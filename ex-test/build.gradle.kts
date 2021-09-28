@@ -17,6 +17,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.4.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
+    testImplementation("io.mockk:mockk:1.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 }
