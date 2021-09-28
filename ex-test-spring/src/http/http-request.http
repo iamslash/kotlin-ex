@@ -1,0 +1,11 @@
+POST http://localhost:8080/mockmvc/validate
+Content-Type: application/json
+
+{
+    "name": {
+        "first": "David",
+        "last" : "Sun"
+    }
+}
+
+###
