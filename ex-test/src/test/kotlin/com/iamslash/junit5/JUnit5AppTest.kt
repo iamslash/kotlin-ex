@@ -1,5 +1,6 @@
-package com.iamslash
+package com.iamslash.junit5
 
+import com.iamslash.junit5.JUnit5App
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
