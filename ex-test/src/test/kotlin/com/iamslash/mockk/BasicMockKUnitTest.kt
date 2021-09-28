@@ -6,8 +6,15 @@ import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
+import io.mockk.justRun
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+
+class MockedClass {
+    fun sum(a: Int, b: Int): Unit {
+        println(a + b)
+    }
+}
 
 class BasicMockKUnitTest {
 
@@ -93,6 +100,24 @@ class BasicMockKUnitTest {
         assertEquals(2, list.size)
         assertEquals("Expected Param 1", list[0])
         assertEquals("Expected Param 2", list[1])
+    }
+
+    @Test
+    fun givenMock_justRun() {
+        val obj = mockk<MockedClass>(relaxed = true)
+
+        // justRun is a shorthand for "every { x } returns Unit"
+        justRun { obj.sum(any(), 3) }
+
+        obj.sum(1, 1)
+        obj.sum(1, 2)
+        obj.sum(1, 3)
+
+        verify {
+            obj.sum(1, 1)
+            obj.sum(1, 2)
+            obj.sum(1, 3)
+        }
     }
 
 }
