@@ -20,6 +20,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.11.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
+    testImplementation("org.amshove.kluent:kluent:1.68")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

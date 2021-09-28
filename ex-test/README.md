@@ -9,3 +9,6 @@ This is about how to write test codes in Kotlin.
   * [src](https://github.com/Baeldung/kotlin-tutorials/tree/master/kotlin-testing)
 * [MockK: A Mocking Library for Kotlin](https://www.baeldung.com/kotlin/mockk)
   * [src](https://github.com/Baeldung/kotlin-tutorials/tree/master/kotlin-testing)
+*  [Kluent](https://markusamshove.github.io/Kluent/)
+  * Fluent Assertion-Library for Kotlin
+  * [src](https://github.com/MarkusAmshove/Kluent)
