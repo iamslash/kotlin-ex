@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+.classpath
 
 # Log file
 *.log
@@ -34,6 +35,7 @@ src_managed
 build/
 out/
 target/
+bin/
 
 .gradletasknamecache
 .DS_Store
