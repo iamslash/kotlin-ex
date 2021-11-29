@@ -19,6 +19,23 @@ class MockedClass {
 class BasicMockKUnitTest {
 
     @Test
+    fun `examples of returnsMany`() {
+        // given
+        val service = mockk<TestableService>()
+        every { service.getDataFromDb("1") }.returnsMany("a", "b", "c")
+        // when
+        val actual1 = service.getDataFromDb("1")
+        val actual2 = service.getDataFromDb("1")
+        val actual3 = service.getDataFromDb("1")
+        val actual4 = service.getDataFromDb("1")
+        // then
+        assertEquals(actual1, "a")
+        assertEquals(actual2, "b")
+        assertEquals(actual3, "c")
+        assertEquals(actual4, "c")
+    }
+
+    @Test
     fun givenServiceMock_whenCallingMockedMethod_thenCorrectlyVerified() {
         // given
         val service = mockk<TestableService>()
