@@ -16,14 +16,14 @@ object CacheMonoApp {
         return Mono.just(ZonedDateTime.now().toString())
     }
 
-    fun handleCacheMiss(key: String): Mono<String> {
+    fun handleCacheMiss(key: String): Mono<String?> {
         println("Cache miss !!!")
-        return Mono.just("$key : ${Instant.now()}")
+        return Mono.just(Instant.now().toString())
     }
 
     @JvmStatic
     fun main(args: Array<String>) {
-        doFunctionCache("A").block()
+        doFunctionCache("keyA").block()
 //        doMapCache()
 //        doMapClassCache()
 //        doCaffeineCache()
@@ -37,14 +37,14 @@ object CacheMonoApp {
                 .map { Signal.next(it) }
             },
             key)
-            .onCacheMissResume(Mono.just("a"))
+            .onCacheMissResume(handleCacheMiss(key))
             .andWriteWith { key, sig ->
                 Mono.fromRunnable {
                     mapStringCache
                     mapStringCache[key] = sig.get()!!
                 }
             }
-        return itemVal.doOnNext { println("itemVal is $it") }
+        return itemVal.doOnNext { v -> println("key: $key, val is $v") }
     }
 
     fun doMapCache() {
