@@ -1,13 +1,15 @@
 package com.iamslash.exreactorcache
 
-import org.reactivestreams.Subscription
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import reactor.cache.CacheMono
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Signal
+import java.time.Duration
 import java.time.Instant
 import java.time.ZonedDateTime
-import java.util.Objects
-import java.util.Objects.requireNonNull
+import java.util.concurrent.TimeUnit
+
 
 object CacheMonoApp {
 
@@ -23,40 +25,70 @@ object CacheMonoApp {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        doFunctionCache("keyA").block()
-//        doMapCache()
-//        doMapClassCache()
-//        doCaffeineCache()
+//        doFunctionCache("keyA").block()
+//        doMapCache("keyA").block()
+//        doMapClassCache("keyA").block()
+        doCaffeineCache("keyA").block()
     }
 
-    fun doFunctionCache(key: String): Mono<String?> {
-        val mapStringCache: MutableMap<String, String> = mutableMapOf()
-        val itemVal = CacheMono.lookup(
-            { _ ->
-                Mono.justOrEmpty(mapStringCache[key])
-                .map { Signal.next(it) }
+    fun doFunctionCache(itemKey: String): Mono<String> {
+        val stringCacheMap: MutableMap<String, String> = mutableMapOf()
+        val itemVal: Mono<String> = CacheMono.lookup(
+            { k ->
+                Mono.justOrEmpty(stringCacheMap[k])
+                .map {
+                    Signal.next(it!!)
+                }
             },
-            key)
-            .onCacheMissResume(handleCacheMiss(key))
+            itemKey)
+//            .onCacheMissResume { handleCacheMiss() }
+            .onCacheMissResume(handleCacheMiss(itemKey))
             .andWriteWith { key, sig ->
                 Mono.fromRunnable {
-                    mapStringCache
-                    mapStringCache[key] = sig.get()!!
+                    stringCacheMap
+                    stringCacheMap[key] = sig.get()
                 }
             }
-        return itemVal.doOnNext { v -> println("key: $key, val is $v") }
+        return itemVal.doOnNext { v -> println("key: $itemKey, val is $v") }
     }
 
-    fun doMapCache() {
-
+    fun doMapCache(itemKey: String): Mono<String> {
+        val stringSignalCacheMap: MutableMap<String, Signal<out String>> = mutableMapOf()
+        val itemVal: Mono<String> = CacheMono.lookup(stringSignalCacheMap, itemKey)
+//            .onCacheMissResume { handleCacheMiss() }
+            .onCacheMissResume(handleCacheMiss(itemKey))
+        return itemVal.doOnNext { v -> println("key: $itemKey, val is $v") }
     }
 
-    fun doMapClassCache() {
-
+    fun doMapClassCache(itemKey: String): Mono<String> {
+        val objectSignalCacheMap: MutableMap<String, Signal<*>> = mutableMapOf()
+        val itemVal: Mono<String> = CacheMono.lookup(objectSignalCacheMap, itemKey, String::class.java)
+//            .onCacheMissResume { handleCacheMiss() }
+            .onCacheMissResume(handleCacheMiss(itemKey))
+        return itemVal.doOnNext { v -> println("key: $itemKey, val is $v") }
     }
 
-    fun doCaffeineCache() {
-
+    fun doCaffeineCache(itemKey: String): Mono<String> {
+        val caffeineCache: Cache<String, String> = Caffeine.newBuilder()
+            .expireAfterWrite(1L, TimeUnit.SECONDS)
+            .recordStats()
+            .build()
+        val itemVal: Mono<String> = CacheMono.lookup(
+            { k ->
+                Mono.justOrEmpty(caffeineCache.getIfPresent(k))
+                    .map {
+                        Signal.next(it!!)
+                    }
+            },
+            itemKey)
+//            .onCacheMissResume { handleCacheMiss() }
+            .onCacheMissResume(handleCacheMiss(itemKey))
+            .andWriteWith { key, sig ->
+                Mono.fromRunnable {
+                    caffeineCache.put(key, sig.get())
+                }
+            }
+        return itemVal.doOnNext { v -> println("key: $itemKey, val is $v") }
     }
 
 }
