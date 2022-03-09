@@ -1,4 +1,4 @@
-package creational
+package structural
 
 interface Temperature {
     var temperature: Double
@@ -28,7 +28,7 @@ fun main() {
 
     fahrenheitTemperature.temperature = 100.0
     println("${fahrenheitTemperature.temperature} F -> ${celsiusTemperature.temperature} C")
-// Output:
-//    36.6 C -> 97.88000000000001 F
-//    100.0 F -> 37.77777777777778 C
+    // Output:
+    //    36.6 C -> 97.88000000000001 F
+    //    100.0 F -> 37.77777777777778 C
 }
