@@ -4,10 +4,11 @@ import org.slf4j.LoggerFactory
 
 class LoggerCompanion {
 
+
     companion object {
-        private val logger = LoggerFactory.getLogger(LoggerCompanion::class.java)
-//        // This is not what we want.
-//        private val logger = LoggerFactory.getLogger(javaClass)
+//        private val logger = LoggerFactory.getLogger(LoggerCompanion::class.java)
+        // This is not what we want.
+        private val logger = LoggerFactory.getLogger(javaClass)
     }
 
     fun helloWorld() {

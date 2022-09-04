@@ -1,11 +1,12 @@
 package com.iamslash
 
 fun main() {
-    // Sort intArray
+    // sort intArray
     val a = intArrayOf(5, 4, 3, 2, 1)
-    val sortList = a.sort()
-    val sortDescending = a.sortDescending()
+    a.sort()
+    a.sortDescending()
 
+    // sorted intArray
     val sorted = a.sorted()
     val sortedBy = a.sortedBy { kotlin.math.abs(it) }
     val sortedDescending = a.sortedDescending()
@@ -17,4 +18,11 @@ fun main() {
             else -> 0
         }
     }
+    val sortedWithComparator = a.sortedWith(Comparator<Int>{ a, b ->
+        when {
+            a < b -> -1
+            a > b -> 1
+            else -> 0
+        }
+    })
 }

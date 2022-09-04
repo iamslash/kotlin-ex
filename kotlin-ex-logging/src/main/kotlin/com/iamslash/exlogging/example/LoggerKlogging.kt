@@ -2,7 +2,7 @@ package com.iamslash.exlogging.example
 
 import com.iamslash.exlogging.logging.KLogging
 
-class LoggerKloging {
+class LoggerKlogging {
 
     companion object : KLogging()
 
@@ -12,5 +12,5 @@ class LoggerKloging {
 }
 
 fun main() {
-    LoggerKloging().helloWorld()
+    LoggerKlogging().helloWorld()
 }
