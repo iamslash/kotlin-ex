@@ -1,5 +1,7 @@
 package com.iamslash.exeffective.item1
 
+import java.util.SortedSet
+import java.util.TreeSet
 import kotlin.concurrent.thread
 import kotlin.properties.Delegates
 
@@ -14,10 +16,10 @@ import kotlin.properties.Delegates
 // * Do not expose mutable objects.
 fun main() {
     run {
+        // There 2 kinds of something mutable.
         // Mutable variables
         var a = 10
         var b: MutableList<Int> = mutableListOf()
-
         // Mutable classes
         class BankAccount {
             var balance = 0.0
@@ -37,7 +39,6 @@ fun main() {
 
             inner class InsufficientFunds: Exception()
         }
-
         val account = BankAccount()
         println(account.balance)  // 0.0
         account.deposit(100.0)
@@ -52,7 +53,6 @@ fun main() {
     // * It requires proper synchronization in multithreaded programs.
     // * Mutable elements are harder to test.
     // * When state mutates, often some other classes need to be notified about this change.
-
     run {
         // managing shared state is hard
         var num = 0
@@ -108,19 +108,21 @@ fun main() {
 
         // A read-only property can provide the mutability
         // with get()
-        var name: String = "David"
-        var surname: String = "Sun"
-        val fullName: String
-            get() = "$name $surname"
-        println(fullName)  // David Sun
-        name = "John"
-        println(fullName)  // John Sun
+        run {
+            var name: String = "David"
+            var surname: String = "Sun"
+            val fullName: String
+                get() = "$name $surname"
+            println(fullName)  // David Sun
+            name = "John"
+            println(fullName)  // John Sun
+        }
 
         // Custom getter can provide the mutability
         // with get()
         fun calculate(): Int {
             println("Calculating...")
-            return 42å
+            return 42
         }
         val fizz = calculate()
         val buzz
@@ -152,14 +154,94 @@ fun main() {
             println(fullName2.length)  // David Sun
         }
     }
+
     //////////////////////////////////////////////////
     // ..Separation between mutable and read-only collections
+    run {
+        run {
+            // This is Iterable.map implementation in stdlib
+            // Return immutable collection (List<R>).
+            // But is using mutable Collection (ArrayList<R>).
+            // We don't need to use immutable collection inside
+            // to return immutable collection. It's ok
+            // to use platform specific collection.
+            inline fun <T, R> Iterable<T>.map(
+                transformation: (T) -> R
+            ): List<R> {
+                val list = ArrayList<R>()
+                for (elem in this) {
+                    list.add(transformation(elem))
+                }
+                return list
+            }
+        }
+        run {
+            // We can creates a copy of mutable collection
+            val list = listOf(1, 2, 3)
+            val mutableList = list.toMutableList()
+            mutableList.add(4)
+        }
+
+    }
 
     //////////////////////////////////////////////////
     // ..copy in data classes
+    run {
+        // Immutable objects has these advantages.
+        //
+        // * Easy to understand because the state is not changed.
+        // * Easy to parallelize those.
+        // * Easy to cache.
+        // * Do not make defensive copies on immutable objects???
+        // * Perfect material to construct other objects???
+        // * Easy to add or use them as keys in maps.
+        data class FullName(var sname, var fname)
+        val names: SortedSet<FullName> = TreeSet()
+        val person = FullName("AAA", "AAA")
+        names.add(person)
+        names.add(FullName("David", "Sun"))
+        names.add(FullName("John", "Doe"))
+        println(names)  // [AAA AAA, David Sun, John Doe]
+        println(person in names)  // true
+        person.fname = "ZZZ"
+        println(names)  // [ZZZ AAA, David Sun, John Doe]
+        print(person in names)  // false
+
+        // When we use immutable objects It's good to make
+        // a function to return a immutable copy such as
+        // withSurname().
+        // But if there are many properties that method makes
+        // boiler plates.
+        // AsIs:
+        run {
+            class User(
+                val name: String,
+                val surname: String
+            ) {
+                fun withSurname(surname: String) = User(name, surname)
+            }
+
+            var user = User("David", "Sun")
+            user = user.withSurname("Tim")
+            println(user)  // User(name=David, surname=Tim)
+        }
+        // Use copy () function .
+        // ToBe:
+        run {
+            data class User(
+                val name: String,
+                val surname: String
+            )
+            var user = User("David", "Sun")
+            user = user.copy(surname = "Tim")
+            println(user)  // User(name=David, surname=Tim)
+        }
+    }
 
     //////////////////////////////////////////////////
     // Different kinds of mutation points
+    //
+    // Do not use mutable property of mutable collection.
     run {
         // Mutable collection
         val list1: MutableList<Int> = mutableListOf()

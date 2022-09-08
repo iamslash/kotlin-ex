@@ -2,7 +2,7 @@ package com.iamslash.exeffective.item4
 
 // Item 4: Do not expose inferred types
 //
-// * we should not hide it.
+// * We should not hide return type.
 fun main() {
     // Type mismatch happens
     open class Animal
