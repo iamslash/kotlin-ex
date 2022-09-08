@@ -59,7 +59,7 @@ fun main() {
         }
 
         val hasValue = true
-        // AsIs
+        // AsIs:
         run {
             val user: User
             if (hasValue) {
@@ -68,7 +68,7 @@ fun main() {
                 user = User("Tom")
             }
         }
-        // ToBe
+        // ToBe:
         run {
             val user: User = if (hasValue) {
                 getValue()
