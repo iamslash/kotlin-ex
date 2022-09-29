@@ -30,7 +30,7 @@ fun main() {
 
     //////////////////////////////////////////////////
     // Arguments
-    // ToBe
+    // good:
     run {
         fun factorial(n: Int): Long {
             // default exception message
@@ -52,7 +52,7 @@ fun main() {
             require(isValidEmail(user.email))
         }
     }
-    // ToBe
+    // good:
     run {
         fun factorial(n: Int): Long {
             // customized exception message
@@ -67,16 +67,22 @@ fun main() {
     //////////////////////////////////////////////////
     // State
 
-    // ToBe
+    // good
     run {
+        fun isInitialized(): Boolean = true
+        data class UserInfo(val name: String)
+        val token = "xxx"
+        fun isOpen(): Boolean = true
         fun speak(text: String) {
-            check(isInitialized)
+            check(isInitialized())
         }
         fun getUserInfo(): UserInfo {
             checkNotNull(token)
+            return UserInfo("foo")
         }
-        fun next(): T {
-            check(isOpen)
+        fun next(): UserInfo {
+            check(isOpen())
+            return UserInfo("bar")
         }
     }
 

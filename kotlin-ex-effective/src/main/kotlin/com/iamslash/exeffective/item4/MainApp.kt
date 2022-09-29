@@ -7,27 +7,31 @@ fun main() {
     // Type mismatch happens
     open class Animal
     class Zebra: Animal()
-    // AsIs:
+    // bad:
     run {
         var animal = Zebra()
-        animal = Animal()  // ERROR: Type mismatch
+//        animal = Animal()  // ERROR: Type mismatch
     }
-    // ToBe:
+    // good:
     run {
         var animal: Animal = Zebra()
         animal = Animal()
     }
+}
 
-    // We should not hide return type.
-    class Fiat126P
-    interface Car
-    val DEFAULT_CAR = Fiat126P()
-    // AsIs:
-    interface CarFactory {
-        fun produce() = DEFAULT_CAR
-    }
-    // ToBe:
-    interface CarFactory {
-        fun produce(): Car = DEFAULT_CAR
+// We should not hide return type.
+class Fiat126P
+interface Car
+fun main_2() {
+    run {
+        val DEFAULT_CAR = Fiat126P()
+//        // bad:
+//        interface CarFactory {
+//            fun produce() = DEFAULT_CAR
+//        }
+//        // good:
+//        interface CarFactory {
+//            fun produce(): Car = DEFAULT_CAR
+//        }
     }
 }

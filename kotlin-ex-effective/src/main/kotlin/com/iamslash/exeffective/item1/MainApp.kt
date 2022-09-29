@@ -14,6 +14,9 @@ import kotlin.properties.Delegates
 // * When you hold state, prefer read-only over mutable collections.
 // * Design your mutation points wisely and do not produce unnecessary ones.
 // * Do not expose mutable objects.
+interface Element {
+    val active: Boolean
+}
 fun main() {
     run {
         // There 2 kinds of something mutable.
@@ -109,49 +112,61 @@ fun main() {
         // A read-only property can provide the mutability
         // with get()
         run {
-            var name: String = "David"
-            var surname: String = "Sun"
-            val fullName: String
-                get() = "$name $surname"
-            println(fullName)  // David Sun
-            name = "John"
-            println(fullName)  // John Sun
+            class Person {
+                var name: String = "David"
+                var surname: String = "Sun"
+                val fullName: String
+                    get() = "$name $surname"
+            }
+            val person = Person()
+            println(person.fullName)  // David Sun
+            person.name = "John"
+            println(person.fullName)  // John Sun
         }
 
         // Custom getter can provide the mutability
         // with get()
-        fun calculate(): Int {
-            println("Calculating...")
-            return 42
+        run {
+            class Foo {
+                val fizz = calculate()
+                val buzz
+                    get() = calculate()
+                fun calculate(): Int {
+                    println("Calculating...")
+                    return 42
+                }
+            }
+            val foo = Foo()
+            println(foo.fizz)  // 3
+            println(foo.fizz)  // 3
+            println(foo.buzz)  // Calculating... 42
+            println(foo.buzz)  // Calculating... 42
         }
-        val fizz = calculate()
-        val buzz
-            get() = calculate()
-        println(fizz)  // 3
-        println(fizz)  // 3
-        println(buzz)  // Calculating... 42
-        println(buzz)  // Calculating... 42
 
         // Can override val with var
-        interface Element {
-            val active: Boolean
-        }
-        class ActualElement: Element {
-            override var active : Boolean = false
+        run {
+            class ActualElement: Element {
+                override var active: Boolean = false
+            }
         }
 
         // fullName was not smart casted.
         // fullName2 was smart casted.
-        val name: String? = "David"
-        val surname: String = "Sun"
-        val fullName: String?
-            get() = name?.let { "$it $surname" }
-        val fullName2: String? = name?.let { "$it $surname" }
-        if (fullName != null) {
-            println(fullName.length)  // ERROR
-        }
-        if (fullName2 != null) {
-            println(fullName2.length)  // David Sun
+        run {
+            class Person {
+                val name: String? = "David"
+                val surname: String = "Sun"
+                val fullName: String?
+                    get() = name?.let { "$it $surname" }
+                val fullName2: String? = name?.let { "$it $surname" }
+            }
+            val person = Person()
+            if (person.fullName != null) {
+                println(person.fullName!!.length)  // ERROR
+            }
+            if (person.fullName2 != null) {
+                println(person.fullName2.length)  // David Sun
+            }
         }
     }
 
@@ -165,7 +180,7 @@ fun main() {
             // We don't need to use immutable collection inside
             // to return immutable collection. It's ok
             // to use platform specific collection.
-            inline fun <T, R> Iterable<T>.map(
+            fun <T, R> Iterable<T>.map(
                 transformation: (T) -> R
             ): List<R> {
                 val list = ArrayList<R>()
@@ -195,7 +210,7 @@ fun main() {
         // * Do not make defensive copies on immutable objects???
         // * Perfect material to construct other objects???
         // * Easy to add or use them as keys in maps.
-        data class FullName(var sname, var fname)
+        data class FullName(var sname: String, var fname: String)
         val names: SortedSet<FullName> = TreeSet()
         val person = FullName("AAA", "AAA")
         names.add(person)
